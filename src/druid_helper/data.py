@@ -1,0 +1,159 @@
+from enum import IntEnum, auto
+from typing import Tuple
+
+_column_names: Tuple[str, ...] = (
+    "Name",
+    "CR",
+    "XP",
+    "Race",
+    "Class1",
+    "Class1_Lvl",
+    "Class2",
+    "Class2_Lvl",
+    "Alignment",
+    "Size",
+    "Type",
+    "subtype1",
+    "subtype2",
+    "subtype3",
+    "subtype4",
+    "subtype5",
+    "subtype6",
+    "AC",
+    "AC_Touch",
+    "AC_Flat-footed",
+    "HP",
+    "HD",
+    "Fort",
+    "Ref",
+    "Will",
+    "Melee",
+    "Ranged",
+    "Space",
+    "Reach",
+    "Str",
+    "Dex",
+    "Con",
+    "Int",
+    "Wis",
+    "Cha",
+    "Feats",
+    "Skills",
+    "RacialMods",
+    "Languages",
+    "SQ",
+    "Environment",
+    "Organization",
+    "Treasure",
+    "Group",
+    "Gear",
+    "OtherGear",
+    "CharacterFlag",
+    "CompanionFlag",
+    "Speed",
+    "Base_Speed",
+    "Fly_Speed",
+    "Maneuverability",
+    "Climb_Speed",
+    "Swim_Speed",
+    "Burrow_Speed",
+    "Speed_Special",
+    "Speed_Land",
+    "Fly",
+    "Climb",
+    "Burrow",
+    "Swim",
+    "VariantParent",
+    "ClassArchetypes",
+    "CompanionFamiliarLink",
+    "AlternateNameForm",
+    "id",
+    "UniqueMonster",
+    "MR",
+    "Mythic",
+    "MT",
+    "Source",
+)
+
+
+class Columns(IntEnum):
+    _name = 0
+    cr = auto()
+    xp = auto()
+    race = auto()
+    class1 = auto()
+    class1_lvl = auto()
+    class2 = auto()
+    class2_lvl = auto()
+    alignment = auto()
+    size = auto()
+    type = auto()
+    subtype1 = auto()
+    subtype2 = auto()
+    subtype3 = auto()
+    subtype4 = auto()
+    subtype5 = auto()
+    subtype6 = auto()
+    ac = auto()
+    ac_touch = auto()
+    ac_flat_footed = auto()
+    hp = auto()
+    hd = auto()
+    fort = auto()
+    ref = auto()
+    will = auto()
+    melee = auto()
+    ranged = auto()
+    space = auto()
+    reach = auto()
+    _str = auto()
+    dex = auto()
+    con = auto()
+    int = auto()
+    wis = auto()
+    cha = auto()
+    feats = auto()
+    skills = auto()
+    racialmods = auto()
+    languages = auto()
+    sq = auto()
+    environment = auto()
+    organization = auto()
+    treasure = auto()
+    group = auto()
+    gear = auto()
+    othergear = auto()
+    characterflag = auto()
+    companionflag = auto()
+    speed = auto()
+    base_speed = auto()
+    fly_speed = auto()
+    maneuverability = auto()
+    climb_speed = auto()
+    swim_speed = auto()
+    burrow_speed = auto()
+    speed_special = auto()
+    speed_land = auto()
+    fly = auto()
+    climb = auto()
+    burrow = auto()
+    swim = auto()
+    variantparent = auto()
+    classarchetypes = auto()
+    companionfamiliarlink = auto()
+    alternatenameform = auto()
+    id = auto()
+    uniquemonster = auto()
+    mr = auto()
+    mythic = auto()
+    mt = auto()
+    source = auto()
+
+    @property
+    def title(self) -> str:
+        return _column_names[self]
+
+
+Columns2 = IntEnum(
+    "Columns2", ((n.lower().replace('-', '_'), i) for i, n in enumerate(_column_names))
+)
