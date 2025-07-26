@@ -1,5 +1,8 @@
 from textual.app import App, ComposeResult
 from textual.widgets import Static
+from textual.app import App, ComposeResult
+from textual.containers import Container
+from textual.widgets import Header, Static
 
 from druid_helper.table import Animals
 from textual.widgets import Footer, Header
@@ -9,10 +12,16 @@ class HorizontalLayoutExample(App):
     CSS_PATH = "layout.tcss"
 
     def compose(self) -> ComposeResult:
-        yield Header(show_clock=True)
-        with Static(name="Listing", id="sidebar"):
-            yield Animals()
-        yield Static(name="Details", id="body", classes="box")
+        yield Header()
+        with Container(id="app-grid"):
+            with Static(name="Listing", id="sidebar"):
+                yield Animals()
+            with Container(name="Details", id="details", classes="box"):
+                yield Static("This")
+                yield Static("panel")
+                yield Static("is")
+                yield Static("using")
+                yield Static("grid layout!", id="bottom-right-final")
         yield Footer()
 
 
