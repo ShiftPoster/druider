@@ -76,7 +76,7 @@ _column_names: Tuple[str, ...] = (
 )
 
 
-class Columns(IntEnum):
+class Column(IntEnum):
     _name = 0
     cr = auto()
     xp = auto()
@@ -153,7 +153,6 @@ class Columns(IntEnum):
     def title(self) -> str:
         return _column_names[self]
 
-
-Columns2 = IntEnum(
-    "Columns2", ((n.lower().replace('-', '_'), i) for i, n in enumerate(_column_names))
-)
+    @property
+    def key(self) -> str:
+        return self.name
