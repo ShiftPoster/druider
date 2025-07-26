@@ -1,10 +1,10 @@
 import csv
+from collections.abc import Callable
 from dataclasses import dataclass
 from enum import IntEnum, auto
 from io import TextIOWrapper
 from pathlib import Path
-from typing import Any, Iterable, List, TypeVar, Dict
-from collections.abc import Callable
+from typing import Any, Dict, Iterable, List, TypeVar
 
 from textual.app import App, ComposeResult
 from textual.widget import Widget
@@ -131,7 +131,9 @@ if __name__ == "__main__":
                 reverse=self.sort_reverse("size"),
             )
 
-        def filter_columns(self, index: ColumnIndex, columns: List[str]) -> Iterable[str]:
+        def filter_columns(
+            self, index: ColumnIndex, columns: List[str]
+        ) -> Iterable[str]:
             yield from (col for col in columns if col.lower() in index.columns())
 
         def verify_row(self, index: ColumnIndex, line: List[str]) -> bool:

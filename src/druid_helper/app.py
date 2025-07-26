@@ -1,11 +1,8 @@
 from textual.app import App, ComposeResult
-from textual.widgets import Static
-from textual.app import App, ComposeResult
 from textual.containers import Container
-from textual.widgets import Header, Static
+from textual.widgets import Footer, Header, Static
 
 from druid_helper.table import Animals
-from textual.widgets import Footer, Header
 
 
 class HorizontalLayoutExample(App):
