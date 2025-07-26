@@ -6,7 +6,10 @@ from pathlib import Path
 from typing import Any, Iterable, List, TypeVar
 
 from textual.app import App, ComposeResult
-from textual.widgets import DataTable, Footer
+from textual.widget import Widget
+from textual.widgets import DataTable, Footer, Header
+
+from druid_helper.data import Columns
 
 T = TypeVar("T")
 FILE: Path = Path.cwd() / "data.csv"
@@ -31,8 +34,8 @@ class Size(IntEnum):
 @dataclass
 class ColumnIndex:
     name: int
-    type: int
     size: int
+    type: int
 
     def indecies(self) -> Iterable[int]:
         return self.__dict__.values()
@@ -49,7 +52,18 @@ class ColumnIndex:
         return cls(**kwargs)
 
 
-class TableApp(App):
+class Animals(DataTable):
+    def compose(self) -> Iterable[Widget]:
+        yield DataTable(zebra_stripes=True)
+
+    def on_mount(self) -> None:
+        self.add_column(Columns._name.title)
+        self.add_column(Columns.size.title)
+        self.add_row("tiger", "large")
+        self.add_row("mouse", "tiny")
+
+
+class AnimalApp(App):
     BINDINGS = [
         ("s", "sort_by_size", "Sort By Size"),
     ]
@@ -58,7 +72,8 @@ class TableApp(App):
     current_sorts: set = set()
 
     def compose(self) -> ComposeResult:
-        yield DataTable()
+        yield Header(show_clock=True)
+        yield DataTable(zebra_stripes=True)
         yield Footer()
 
     def sort_reverse(self, sort_type: str):
@@ -92,7 +107,6 @@ class TableApp(App):
 
     def on_mount(self) -> None:
         table = self.query_one(DataTable)
-        table.zebra_stripes = True
         index = None
         for line in csv.reader(self.file_handle):
             if index is None:
@@ -110,6 +124,5 @@ class TableApp(App):
         return rv
 
 
-app = TableApp()
 if __name__ == "__main__":
-    app.run()
+    AnimalApp().run()
