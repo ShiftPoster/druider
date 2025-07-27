@@ -6,7 +6,7 @@ from textual.containers import Container, Vertical, VerticalGroup
 from textual.widget import Widget
 from textual.widgets import Footer, Header, RichLog
 
-from druid_helper.listing import Listing
+from druider.listing import Listing
 
 logger = logging.getLogger(__name__)
 

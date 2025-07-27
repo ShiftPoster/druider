@@ -11,7 +11,7 @@ from textual.containers import Container
 from textual.widgets import DataTable
 from textual.widgets._data_table import ColumnKey
 
-from druid_helper.data import Column
+from druider.data import Column
 
 logger = logging.getLogger(__name__)
 T = TypeVar("T")

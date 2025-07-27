@@ -3,7 +3,7 @@ requires = ["setuptools"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "druid_helper"
+name = "druider"
 version = "0.0.0"
 dependencies = [
     "textual",
