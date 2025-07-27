@@ -64,7 +64,7 @@ class Animals(DataTable):
             for line in csv.reader(fh):
                 if header is True:
                     header = False
-                else:
+                elif line[Column.type] == "animal":
                     self.add_row(line[Column.size], line[Column._name])
 
     def sort_reverse(self, sort_type: str):
