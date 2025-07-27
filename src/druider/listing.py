@@ -1,21 +1,18 @@
-import csv
 import logging
 from collections.abc import Callable
 from enum import IntEnum, auto
-from pathlib import Path
 from typing import Any, Dict, Iterable, TypeVar
 
 from textual import on
 from textual.app import ComposeResult
 from textual.containers import Container
 from textual.widgets import DataTable
-from textual.widgets._data_table import ColumnKey
+from textual.widgets.data_table import ColumnKey, CellKey
 
-from druider.data import Column
+from druider.data import Column, DataType
 
 logger = logging.getLogger(__name__)
 T = TypeVar("T")
-FILE: Path = Path.cwd() / "data.csv"
 
 
 class Size(IntEnum):
@@ -35,6 +32,7 @@ class Size(IntEnum):
 
 
 class Animals(DataTable):
+    data: DataType
     current_sorts: set = set()
     _sorters: Dict[Column, Callable[[str], Any]] = {
         Column._name: lambda s: s[0],
@@ -46,6 +44,10 @@ class Animals(DataTable):
     }
     zebra_stripes = True
 
+    def __init__(self, data: DataType, *args, **kwargs) -> None:
+        self.data = data
+        super().__init__(*args, **kwargs)
+
     def add_data_column(self, column: Column) -> ColumnKey:
         return self.add_column(column.title, key=column.key)
 
@@ -55,17 +57,15 @@ class Animals(DataTable):
             self.add_data_column(Column._name),
         )
 
+    def add_data_rows(self):
+        for index, entry in enumerate(self.data):
+            if entry[Column.type] == "animal":
+                self.add_row(entry[Column.size], entry[Column._name], key=str(index))
+
     def on_mount(self) -> None:
         logger.info("hello world")
         self.add_data_columns()
-        header = True
-        # TODO: add key to rows
-        with FILE.open(newline="") as fh:
-            for line in csv.reader(fh):
-                if header is True:
-                    header = False
-                elif line[Column.type] == "animal":
-                    self.add_row(line[Column.size], line[Column._name])
+        self.add_data_rows()
 
     def sort_reverse(self, sort_type: str):
         """Determine if `sort_type` is ascending or descending."""
@@ -87,11 +87,30 @@ class Animals(DataTable):
     def action_sort_by_name(self) -> None:
         self.sort_data_column(Column._name)
 
+    def select_animal(self, event: DataTable.CellSelected) -> None | int:
+        selected = None
+        try:
+            if event.cell_key.column_key.value:
+                if Column[event.cell_key.column_key.value] is Column._name:
+                    if event.cell_key.row_key.value is None:
+                        raise ValueError(event.cell_key.row_key)
+                    selected = int(event.cell_key.row_key.value)
+                    logger.info(f"Animal selected: {event.value} ({selected})")
+        except Exception as err:
+            logger.critical(err)
+        return selected
+
 
 class Listing(Container):
+    animals: Animals
+
+    def __init__(self, data: DataType, *args, **kwargs) -> None:
+        self.animals = Animals(data)
+        super().__init__(*args, **kwargs)
+
     def compose(self) -> ComposeResult:
         # TODO: yield sort and search
-        yield Animals()
+        yield self.animals
 
     @on(Animals.RowSelected)
     @on(Animals.CellSelected)
@@ -112,8 +131,8 @@ class Listing(Container):
         except Exception as err:
             logger.critical(err)
 
-    @on(Animals.CellSelected)
-    def handle_cell(self, event: Animals.CellSelected):
+    # @on(Animals.CellSelected)
+    def _handle_cell(self, event: Animals.CellSelected):
         # NOTE: This may need to go on the app or body for values to be easily passed to details
         try:
             if event.cell_key.column_key.value:

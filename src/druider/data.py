@@ -3,6 +3,7 @@ from enum import IntEnum, auto
 from typing import Tuple
 from pathlib import Path
 
+EntryType = Tuple[str]
 DataType = Tuple[Tuple[str]]
 
 
