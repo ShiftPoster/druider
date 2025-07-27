@@ -35,10 +35,9 @@ class Size(IntEnum):
 
 
 class Animals(DataTable):
-    BORDER_TITLE = __name__
     current_sorts: set = set()
     _sorters: Dict[Column, Callable[[str], Any]] = {
-        Column._name: sorted,
+        Column._name: lambda s: s[0],
         Column.size: Size.parse,
     }
     _actions: Dict[Column, str] = {
@@ -105,8 +104,6 @@ class Listing(Container):
     @on(Animals.HeaderSelected)
     def handle_header(self, event: Animals.HeaderSelected):
         # TODO: icon to indicate sort direction
-        # FIXME: name sorting does not work correctly
-        # https://textual.textualize.io/widgets/data_table/#sorting
         try:
             if event.column_key.value:
                 column = Column[event.column_key.value]
@@ -117,6 +114,7 @@ class Listing(Container):
 
     @on(Animals.CellSelected)
     def handle_cell(self, event: Animals.CellSelected):
+        # NOTE: This may need to go on the app or body for values to be easily passed to details
         try:
             if event.cell_key.column_key.value:
                 if Column[event.cell_key.column_key.value] is Column._name:
