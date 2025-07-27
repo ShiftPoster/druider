@@ -19,7 +19,8 @@ class LoggingConsole(RichLog):
         self.write(content)
 
 
-class Body(Vertical): ...
+class Body(Vertical):
+    """Application body."""
 
 
 class DruidHelper(App):
