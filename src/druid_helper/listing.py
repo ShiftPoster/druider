@@ -1,15 +1,13 @@
 import csv
 import logging
 from collections.abc import Callable
-from dataclasses import dataclass
 from enum import IntEnum, auto
-from io import TextIOWrapper
 from pathlib import Path
-from typing import Any, Dict, Iterable, List, TypeVar
+from typing import Any, Dict, Iterable, TypeVar
 
 from textual.containers import Container
 from textual import on
-from textual.app import App, ComposeResult
+from textual.app import ComposeResult
 from textual.widgets import DataTable
 from textual.widgets._data_table import ColumnKey
 
