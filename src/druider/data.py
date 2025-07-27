@@ -1,6 +1,9 @@
+import csv
 from enum import IntEnum, auto
 from typing import Tuple
+from pathlib import Path
 
+DataType = Tuple[Tuple[str]]
 _column_names: Tuple[str, ...] = (
     "Name",
     "CR",
@@ -156,3 +159,15 @@ class Column(IntEnum):
     @property
     def key(self) -> str:
         return self.name
+
+
+def load_data(file: Path) -> Tuple[Tuple[str]]:
+    data = []
+    header = True
+    with file.open() as fh:
+        for entry in csv.reader(fh):
+            if header is True:
+                header = False
+            else:
+                data.append(tuple(entry))
+    return tuple(data)
