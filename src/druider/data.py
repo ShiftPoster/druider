@@ -4,79 +4,6 @@ from typing import Tuple
 from pathlib import Path
 
 DataType = Tuple[Tuple[str]]
-_column_names: Tuple[str, ...] = (
-    "Name",
-    "CR",
-    "XP",
-    "Race",
-    "Class1",
-    "Class1_Lvl",
-    "Class2",
-    "Class2_Lvl",
-    "Alignment",
-    "Size",
-    "Type",
-    "subtype1",
-    "subtype2",
-    "subtype3",
-    "subtype4",
-    "subtype5",
-    "subtype6",
-    "AC",
-    "AC_Touch",
-    "AC_Flat-footed",
-    "HP",
-    "HD",
-    "Fort",
-    "Ref",
-    "Will",
-    "Melee",
-    "Ranged",
-    "Space",
-    "Reach",
-    "Str",
-    "Dex",
-    "Con",
-    "Int",
-    "Wis",
-    "Cha",
-    "Feats",
-    "Skills",
-    "RacialMods",
-    "Languages",
-    "SQ",
-    "Environment",
-    "Organization",
-    "Treasure",
-    "Group",
-    "Gear",
-    "OtherGear",
-    "CharacterFlag",
-    "CompanionFlag",
-    "Speed",
-    "Base_Speed",
-    "Fly_Speed",
-    "Maneuverability",
-    "Climb_Speed",
-    "Swim_Speed",
-    "Burrow_Speed",
-    "Speed_Special",
-    "Speed_Land",
-    "Fly",
-    "Climb",
-    "Burrow",
-    "Swim",
-    "VariantParent",
-    "ClassArchetypes",
-    "CompanionFamiliarLink",
-    "AlternateNameForm",
-    "id",
-    "UniqueMonster",
-    "MR",
-    "Mythic",
-    "MT",
-    "Source",
-)
 
 
 class Column(IntEnum):
@@ -154,7 +81,10 @@ class Column(IntEnum):
 
     @property
     def title(self) -> str:
-        return _column_names[self]
+        title = self.name.split('_')
+        title = filter(bool, title)
+        title = map(str.capitalize, title)
+        return ' '.join(title)
 
     @property
     def key(self) -> str:
