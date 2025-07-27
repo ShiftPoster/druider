@@ -1,4 +1,5 @@
 import csv
+import logging
 from collections.abc import Callable
 from dataclasses import dataclass
 from enum import IntEnum, auto
@@ -6,13 +7,15 @@ from io import TextIOWrapper
 from pathlib import Path
 from typing import Any, Dict, Iterable, List, TypeVar
 
+from textual.containers import Container
+from textual import on
 from textual.app import App, ComposeResult
-from textual.widget import Widget
 from textual.widgets import DataTable
 from textual.widgets._data_table import ColumnKey
 
 from druid_helper.data import Column
 
+logger = logging.getLogger(__name__)
 T = TypeVar("T")
 FILE: Path = Path.cwd() / "data.csv"
 
@@ -32,7 +35,7 @@ class Size(IntEnum):
     def parse(cls, value: str):
         return cls[value.lower()]
 
-from textual import on
+
 class Animals(DataTable):
     BORDER_TITLE = __name__
     current_sorts: set = set()
@@ -44,9 +47,7 @@ class Animals(DataTable):
         Column._name: "sort_by_name",
         Column.size: "sort_by_size",
     }
-
-    def compose(self) -> Iterable[Widget]:
-        yield DataTable(zebra_stripes=True)
+    zebra_stripes = True
 
     def add_data_column(self, column: Column) -> ColumnKey:
         return self.add_column(column.title, key=column.key)
@@ -58,12 +59,10 @@ class Animals(DataTable):
         )
 
     def on_mount(self) -> None:
+        logger.info("hello world")
         self.add_data_columns()
-        # TODO: on name click, cache in attribute
-        # TODO: on size click, filter on that size
-        # self.add_row("tiger", "large")
-        # self.add_row("mouse", "tiny")
         header = True
+        # TODO: add key to rows
         with FILE.open(newline="") as fh:
             for line in csv.reader(fh):
                 if header is True:
@@ -89,34 +88,65 @@ class Animals(DataTable):
     def action_sort_by_name(self) -> None:
         self.sort_data_column(Column._name)
 
-    @on(DataTable.ColumnSelected)
-    def on_column_selected(self, event: DataTable.ColumnSelected):
-        pass
 
+class Listing(Container):
+    def compose(self) -> ComposeResult:
+        # TODO: yield sort and search
+        yield Animals()
 
-@dataclass
-class ColumnIndex:
-    name: int
-    size: int
-    type: int
+    @on(Animals.RowSelected)
+    @on(Animals.CellSelected)
+    @on(Animals.ColumnSelected)
+    @on(Animals.HeaderSelected)
+    @on(Animals.RowLabelSelected)
+    def log_animal_selection(self, event):
+        logger.debug(event)
 
-    def indecies(self) -> Iterable[int]:
-        return self.__dict__.values()
+    @on(Animals.HeaderSelected)
+    def handle_header(self, event: Animals.HeaderSelected):
+        # TODO: icon to indicate sort direction
+        # FIXME: name sorting does not work correctly
+        # https://textual.textualize.io/widgets/data_table/#sorting
+        try:
+            if event.column_key.value:
+                column = Column[event.column_key.value]
+                logger.info(f"Sorting Animals by {column!r}")
+                self.query_one(Animals).sort_data_column(column)
+        except Exception as err:
+            logger.critical(err)
 
-    def columns(self) -> Iterable[str]:
-        return self.__dict__.keys()
-
-    @classmethod
-    def parse(cls, header: List[str]):
-        kwargs = {}
-        refernce = tuple(map(str.upper, header))
-        for attr in cls.__annotations__:
-            kwargs[attr] = refernce.index(attr.upper())
-        return cls(**kwargs)
+    @on(Animals.CellSelected)
+    def handle_cell(self, event: Animals.CellSelected):
+        try:
+            if event.cell_key.column_key.value:
+                if Column[event.cell_key.column_key.value] is Column._name:
+                    logger.info(f"Caching Animal cell {event.value}")
+        except Exception as err:
+            logger.critical(err)
 
 
 if __name__ == "__main__":
     from textual.widgets import Footer, Header
+
+    @dataclass
+    class ColumnIndex:
+        name: int
+        size: int
+        type: int
+
+        def indecies(self) -> Iterable[int]:
+            return self.__dict__.values()
+
+        def columns(self) -> Iterable[str]:
+            return self.__dict__.keys()
+
+        @classmethod
+        def parse(cls, header: List[str]):
+            kwargs = {}
+            refernce = tuple(map(str.upper, header))
+            for attr in cls.__annotations__:
+                kwargs[attr] = refernce.index(attr.upper())
+            return cls(**kwargs)
 
     class AnimalApp(App):
         BINDINGS = [
