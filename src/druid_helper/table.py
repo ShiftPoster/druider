@@ -8,7 +8,7 @@ from typing import Any, Dict, Iterable, List, TypeVar
 
 from textual.app import App, ComposeResult
 from textual.widget import Widget
-from textual.widgets import DataTable, Footer, Header
+from textual.widgets import DataTable
 from textual.widgets._data_table import ColumnKey
 
 from druid_helper.data import Column
@@ -32,17 +32,18 @@ class Size(IntEnum):
     def parse(cls, value: str):
         return cls[value.lower()]
 
-
-sorter: Dict[Column, Callable[[str], Any]] = {
-    Column.size: Size.parse,
-}
-
-
+from textual import on
 class Animals(DataTable):
-    BINDINGS = [
-        ("s", "sort_by_size", "Sort By Size"),
-    ]
+    BORDER_TITLE = __name__
     current_sorts: set = set()
+    _sorters: Dict[Column, Callable[[str], Any]] = {
+        Column._name: sorted,
+        Column.size: Size.parse,
+    }
+    _actions: Dict[Column, str] = {
+        Column._name: "sort_by_name",
+        Column.size: "sort_by_size",
+    }
 
     def compose(self) -> Iterable[Widget]:
         yield DataTable(zebra_stripes=True)
@@ -52,17 +53,23 @@ class Animals(DataTable):
 
     def add_data_columns(self) -> Iterable[ColumnKey]:
         return (
-            self.add_data_column(Column._name),
             self.add_data_column(Column.size),
+            self.add_data_column(Column._name),
         )
 
     def on_mount(self) -> None:
         self.add_data_columns()
-        self.add_row("tiger", "large")
-        self.add_row("mouse", "tiny")
-
-    def sort_data_column(self, column: Column):
-        self.sort(column.key, key=sorter[column], reverse=self.sort_reverse(column.key))
+        # TODO: on name click, cache in attribute
+        # TODO: on size click, filter on that size
+        # self.add_row("tiger", "large")
+        # self.add_row("mouse", "tiny")
+        header = True
+        with FILE.open(newline="") as fh:
+            for line in csv.reader(fh):
+                if header is True:
+                    header = False
+                else:
+                    self.add_row(line[Column.size], line[Column._name])
 
     def sort_reverse(self, sort_type: str):
         """Determine if `sort_type` is ascending or descending."""
@@ -73,8 +80,18 @@ class Animals(DataTable):
             self.current_sorts.add(sort_type)
         return reverse
 
+    def sort_data_column(self, column: Column):
+        self.sort(column.key, key=self._sorters[column], reverse=self.sort_reverse(column.key))
+
     def action_sort_by_size(self) -> None:
         self.sort_data_column(Column.size)
+
+    def action_sort_by_name(self) -> None:
+        self.sort_data_column(Column._name)
+
+    @on(DataTable.ColumnSelected)
+    def on_column_selected(self, event: DataTable.ColumnSelected):
+        pass
 
 
 @dataclass
