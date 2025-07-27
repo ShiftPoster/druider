@@ -1,6 +1,6 @@
-#sidebar {
+#listing {
     dock: left;
-    width: 35%;
+    width: 40%;
     height: 100%;
     background: $panel;
     border: solid green;
