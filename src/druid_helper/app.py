@@ -1,10 +1,10 @@
 import logging
 
-from textual.widget import Widget
-from textual.app import App, ComposeResult
-from textual.containers import Container, VerticalGroup, Vertical
-from textual.widgets import Footer, Header, RichLog
 from rich.logging import RichHandler
+from textual.app import App, ComposeResult
+from textual.containers import Container, Vertical, VerticalGroup
+from textual.widget import Widget
+from textual.widgets import Footer, Header, RichLog
 
 from src.druid_helper.listing import Listing
 
@@ -19,8 +19,7 @@ class LoggingConsole(RichLog):
         self.write(content)
 
 
-class Body(Vertical):
-    ...
+class Body(Vertical): ...
 
 
 class DruidHelper(App):

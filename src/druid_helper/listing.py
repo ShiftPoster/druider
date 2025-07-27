@@ -5,9 +5,9 @@ from enum import IntEnum, auto
 from pathlib import Path
 from typing import Any, Dict, Iterable, TypeVar
 
-from textual.containers import Container
 from textual import on
 from textual.app import ComposeResult
+from textual.containers import Container
 from textual.widgets import DataTable
 from textual.widgets._data_table import ColumnKey
 
@@ -78,7 +78,9 @@ class Animals(DataTable):
         return reverse
 
     def sort_data_column(self, column: Column):
-        self.sort(column.key, key=self._sorters[column], reverse=self.sort_reverse(column.key))
+        self.sort(
+            column.key, key=self._sorters[column], reverse=self.sort_reverse(column.key)
+        )
 
     def action_sort_by_size(self) -> None:
         self.sort_data_column(Column.size)
