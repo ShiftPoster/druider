@@ -7,7 +7,7 @@ from textual import on
 from textual.app import ComposeResult
 from textual.containers import Container
 from textual.widgets import DataTable
-from textual.widgets.data_table import ColumnKey, CellKey
+from textual.widgets.data_table import ColumnKey
 
 from druider.data import Column, DataType
 

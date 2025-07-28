@@ -8,3 +8,14 @@ version = "0.0.0"
 dependencies = [
     "textual",
 ]
+
+[project.optional-dependencies]
+serve = [
+    "textual-serve",
+]
+
+[project.scripts]
+druider = "druider.main:main"
+
+[tool.setuptools.package-data]
+"*" = ["*.*"]
