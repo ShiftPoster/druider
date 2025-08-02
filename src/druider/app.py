@@ -1,26 +1,16 @@
 import logging
 
-from rich.logging import RichHandler
 from rich.tree import Tree
 from textual import on
 from textual.app import App, ComposeResult
-from textual.containers import Vertical, VerticalGroup, Container
-from textual.widget import Widget
-from textual.widgets import Footer, Header, RichLog
-from textual.widgets import TabbedContent, TabPane, Static
+from textual.containers import Container, Vertical, VerticalGroup
+from textual.widgets import Footer, Header, Static, TabbedContent, TabPane
 
-from druider.listing import Listing, Animals
-from druider.data import load_data, DataType, EntryType, Column
+from druider.data import Column, DataType, EntryType, load_data
+from druider.listing import Animals, Listing
+from druider.logging import add_to_stdlib
 
 logger = logging.getLogger(__name__)
-
-
-class LoggingConsole(RichLog):
-    file = False
-    console: Widget
-
-    def print(self, content):
-        self.write(content)
 
 
 class Stats(Container):
@@ -39,8 +29,8 @@ class Stats(Container):
 
 
 class Details(Vertical):
-    def __init__(self, rich_log_handler: RichHandler, *args, **kwargs):
-        self.rich_log_handler = rich_log_handler
+    def __init__(self, *args, **kwargs):
+        self.log_widget = add_to_stdlib()
         super().__init__(*args, **kwargs)
 
     def compose(self) -> ComposeResult:
@@ -50,9 +40,7 @@ class Details(Vertical):
                     yield Stats()
             with TabPane("Logs", id="details-logs-pane"):
                 with VerticalGroup(name="Logs", id="logs", classes="box"):
-                    # yield RichLog()
-                    # yield Log()
-                    yield self.rich_log_handler.console  # type: ignore
+                    yield self.log_widget
 
 
 class Body(Vertical):
@@ -60,9 +48,9 @@ class Body(Vertical):
 
     data: DataType
 
-    def __init__(self, rich_log_handler: RichHandler, data: DataType, *args, **kwargs):
+    def __init__(self, data: DataType, *args, **kwargs):
         self.data = data
-        self.details = Details(rich_log_handler, name="Details", id="details")
+        self.details = Details(name="Details", id="details")
         self.listing = Listing(data, name="Listing", id="listing")
         super().__init__(*args, **kwargs)
 
@@ -85,9 +73,9 @@ class Body(Vertical):
 class DruidHelper(App):
     CSS_PATH = "layout.tcss"
 
-    def __init__(self, rich_log_handler: RichHandler, data: DataType, *args, **kwargs):
+    def __init__(self, data: DataType, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.body = Body(rich_log_handler, data, id="body")
+        self.body = Body(data, id="body")
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -101,18 +89,9 @@ class DruidHelper(App):
 if __name__ == "__main__":
     from pathlib import Path
 
-    from textual.logging import TextualHandler
-
     FILE: Path = Path.cwd() / "data.csv"
-
     root = logging.getLogger()
     root.setLevel(1)
-    rich_log_handler = RichHandler(
-        console=LoggingConsole(),  # type: ignore
-        rich_tracebacks=True,
-    )
-    root.addHandler(rich_log_handler)
-    root.addHandler(TextualHandler())
     data = load_data(FILE)
-    app = DruidHelper(rich_log_handler, data)
+    app = DruidHelper(data)
     app.run()

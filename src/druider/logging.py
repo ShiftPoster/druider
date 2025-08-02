@@ -8,7 +8,7 @@ from textual.widget import Widget
 from textual.widgets import RichLog
 
 if TYPE_CHECKING:
-    from loguru import Record, FilterFunction, FilterDict
+    from loguru import FilterDict, FilterFunction, Record
 
 
 class DruidLog(RichLog):

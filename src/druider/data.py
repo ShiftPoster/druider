@@ -1,7 +1,7 @@
 import csv
 from enum import IntEnum, auto
-from typing import Tuple
 from pathlib import Path
+from typing import Tuple
 
 EntryType = Tuple[str]
 DataType = Tuple[Tuple[str]]
@@ -82,10 +82,10 @@ class Column(IntEnum):
 
     @property
     def title(self) -> str:
-        title = self.name.split('_')
+        title = self.name.split("_")
         title = filter(bool, title)
         title = map(str.capitalize, title)
-        return ' '.join(title)
+        return " ".join(title)
 
     @property
     def key(self) -> str:
