@@ -3,12 +3,12 @@
     width: 40%;
     height: 100%;
     background: $panel;
-    border: round green;
+    border: round green 50%;
 }
 
 #details {
     height: 100%;
     layout: grid;
     background: $panel;
-    border: round green;
+    border: round green 50%;
 }

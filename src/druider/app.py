@@ -6,7 +6,7 @@ from textual.app import App, ComposeResult
 from textual.containers import Container, Vertical, VerticalGroup
 from textual.widgets import Footer, Header, Static, TabbedContent, TabPane
 
-from druider.data import Column, DataType, EntryType, load_data
+from druider.data import Column, DataType, EntryType
 from druider.listing import Animals, Listing
 from druider.logging import add_to_stdlib
 
@@ -84,14 +84,3 @@ class DruidHelper(App):
 
     def on_mount(self):
         self.theme = "monokai"
-
-
-if __name__ == "__main__":
-    from pathlib import Path
-
-    FILE: Path = Path.cwd() / "data.csv"
-    root = logging.getLogger()
-    root.setLevel(1)
-    data = load_data(FILE)
-    app = DruidHelper(data)
-    app.run()
